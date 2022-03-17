@@ -1,5 +1,9 @@
 var line = 1;
 var box = 1;
+var word = "";
+const c_word = "ALERT"
+
+
 const Keyboard = {
     elements: {
         main: null,
@@ -50,12 +54,15 @@ const Keyboard = {
         const createIconHTML = (icon_name) => {
             return `<i class="material-icons">${icon_name}</i>`;
         };
+
         document.addEventListener("keyup", function(event) {
             switch (event.code) {
                 case "Enter":
                     if(box == 6) {
+                        compare_words(word, c_word, line);
                         line++;
                         box = 1;
+                        word = "";
                     }
                     break;
                 case "Backspace" :
@@ -64,6 +71,7 @@ const Keyboard = {
                     document.getElementById(s1).innerHTML = `<div></div><br />`;
                     document.getElementById(s1).style.border = "0.1px solid black";
                     document.getElementById(s1).style.margin = "4px";
+                    if(word.length != 0) word = word.slice(0,-1);
                     break;
                 default:
                     const s2 = "line" + line.toString() + "box" + box.toString();
@@ -71,7 +79,10 @@ const Keyboard = {
                     document.getElementById(s2).innerHTML +=`<div>${k.charAt(k.length-1)}</div><br />`;
                     document.getElementById(s2).style.border = "2px solid black";
                     document.getElementById(s2).style.margin = "2.44px";
-                    if(box < 6) box++;
+                    if(box < 6) { 
+                        box++;
+                        word += k.charAt(k.length-1);
+                    }
                     break;
 
             }
@@ -109,8 +120,10 @@ const Keyboard = {
                     keyElement.addEventListener("click", () => {
                         this.properties.value += "\n";
                         if(box == 6) {
+                            compare_words(word, c_word, line);
                             line++;
                             box = 1;
+                            word = "";
                         }
                     });
 
@@ -147,3 +160,74 @@ window.addEventListener("DOMContentLoaded", function () {
     Keyboard.init();
 });
 
+function compare_words(word, ans, line) {
+    var count = 0;
+    for(var i = 0; i < 5; i++) {
+        if(word[i] == ans[i]) {
+            change_color_green(i+1, line);
+            count++;
+        }
+        else {
+            var flag = 0;
+            for(var j = 0; j < 5 ; j++) {
+                if(i!=j && word[i] == ans[j]) {
+                    change_color_yellow(i+1, line);
+                    flag = 1;
+                }
+            }
+            if(flag == 0) change_color_grey(i+1,line);
+        }
+    }
+    if(count == 5) {
+        victory_screen();
+    }
+}
+
+function change_color_green(box, line) {
+    const s3 = "line" + line.toString() + "box" + box.toString();
+    document.getElementById(s3).style.backgroundColor = "#46a842";
+}
+function change_color_grey(box, line) {
+    const s3 = "line" + line.toString() + "box" + box.toString();
+    document.getElementById(s3).style.backgroundColor = "#5f6870";
+}
+function change_color_yellow(box, line) {
+    const s3 = "line" + line.toString() + "box" + box.toString();
+    document.getElementById(s3).style.backgroundColor = "#c1cc5c";
+}
+
+function victory_screen() {
+    var vc_screen = document.getElementById("vc_screen");
+    vc_screen.style.display = "block";
+    window.onclick = function(event) {
+        if (event.target == vc_screen) {
+          vc_screen.style.display = "none";
+        }
+    }
+}
+
+function flip_animate(line) {
+    for(var box = 0; box < 5; box++) {
+        const s = "line" + line.toString() + "box" + box.toString();
+        document.getElementById(s).style.transform = "rotateY(360deg)";
+        document.getElementById(s).style.transition = "1s";
+    }
+}
+
+var modal = document.getElementById("myModal");
+
+var btn = document.getElementById("setting");
+
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+  modal.style.display = "block";
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+}

@@ -10,6 +10,18 @@
     transition: bottom 0.4s;
 }
 
+.settings {
+    position: relative;
+    height: 40px;
+    margin-top: -160px;
+    margin-bottom: 10px;
+    margin-left: 94vw;
+}
+
+.settings:hover {
+    transition: 1s;
+    transform: rotate(360deg);
+}
 
 .keyboard__keys {
     text-align: center;
